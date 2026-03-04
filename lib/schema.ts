@@ -1,57 +1,18 @@
-export interface JsonPrompt {
-  user_intent: string;
-  meta: {
-    aspect_ratio: string;
-    resolution: string;
-    style: string;
-    purpose: string;
-  };
+export interface Refinement {
+  label: string;
   prompt: string;
-  negative_prompt: string[];
-  subject: {
-    type: string;
-    details: string;
-  };
-  scene: {
-    environment: string;
-    time_of_day: string;
-    background: string;
-  };
-  lighting: {
-    type: string;
-    direction: string;
-    quality: string;
-    color_temperature: string;
-  };
-  camera: {
-    body: string;
-    lens: string;
-    aperture: string;
-    film_stock: string;
-    angle: string;
-    composition: string;
-  };
-  style: {
-    aesthetic: string;
-    color_palette: string;
-    mood: string;
-  };
-  post_processing: {
-    sharpness: string;
-    contrast: string;
-    saturation: string;
-  };
-  text?: {
-    content: string;
-    font_style: string;
-    placement: string;
-    color: string;
-  };
-  realism?: {
-    skin_texture: string;
-    imperfections: string;
-    depth_falloff: string;
-  };
+}
+
+export interface Direction {
+  label: string;
+  category: "standard" | "outside-the-box" | "wild-card";
+  description: string;
+  prompt: string;
+  refinements: Refinement[];
+}
+
+export interface GenerateResponse {
+  directions: Direction[];
 }
 
 export const ASPECT_RATIOS = ["16:9", "4:3", "1:1", "9:16", "3:2", "2:3", "3:4", "4:5", "5:4", "21:9"] as const;
@@ -60,12 +21,20 @@ export type AspectRatio = (typeof ASPECT_RATIOS)[number];
 export const RESOLUTIONS = ["1K", "2K", "4K"] as const;
 export type Resolution = (typeof RESOLUTIONS)[number];
 
-export const PRESETS = ["Ad Creative", "Social Post", "Client Deliverable"] as const;
-export type Preset = (typeof PRESETS)[number];
+export const DIRECTION_MODES = {
+  "full-standard": { label: "Full Standard", description: "All conventional approaches", standard: 8, otb: 0, wildCard: 0, total: 8 },
+  "full-creative": { label: "Full Creative", description: "All outside-the-box", standard: 0, otb: 8, wildCard: 0, total: 8 },
+  "full-wild-card": { label: "Full Wild Card", description: "All wild cards", standard: 0, otb: 0, wildCard: 6, total: 6 },
+  "balanced": { label: "A Little of Everything", description: "Balanced mix", standard: 4, otb: 4, wildCard: 2, total: 10 },
+  "money-saver": { label: "Money Saver", description: "Minimal cost, still diverse", standard: 3, otb: 2, wildCard: 1, total: 6 },
+} as const;
 
-export interface ConvertRequest {
+export type DirectionMode = keyof typeof DIRECTION_MODES;
+
+export interface GenerateRequest {
   prompt: string;
-  preset?: Preset;
+  mode?: DirectionMode;
+  includeRefinements?: boolean;
   aspectRatio?: AspectRatio;
   resolution?: Resolution;
   purpose?: string;

@@ -1,13 +1,15 @@
 "use client";
 
-import { ASPECT_RATIOS, RESOLUTIONS, AspectRatio, Resolution, Preset } from "@/lib/schema";
-import PresetSelector from "./PresetSelector";
+import { ASPECT_RATIOS, RESOLUTIONS, AspectRatio, Resolution, DirectionMode } from "@/lib/schema";
+import ModeSelector from "./ModeSelector";
 
 interface PromptInputProps {
   prompt: string;
   onPromptChange: (value: string) => void;
-  preset: Preset | null;
-  onPresetChange: (preset: Preset | null) => void;
+  mode: DirectionMode;
+  onModeChange: (mode: DirectionMode) => void;
+  includeRefinements: boolean;
+  onIncludeRefinementsChange: (value: boolean) => void;
   aspectRatio: AspectRatio;
   onAspectRatioChange: (ratio: AspectRatio) => void;
   resolution: Resolution;
@@ -23,8 +25,10 @@ interface PromptInputProps {
 export default function PromptInput({
   prompt,
   onPromptChange,
-  preset,
-  onPresetChange,
+  mode,
+  onModeChange,
+  includeRefinements,
+  onIncludeRefinementsChange,
   aspectRatio,
   onAspectRatioChange,
   resolution,
@@ -38,7 +42,31 @@ export default function PromptInput({
 }: PromptInputProps) {
   return (
     <div className="flex flex-col gap-5">
-      <PresetSelector selected={preset} onSelect={onPresetChange} />
+      <ModeSelector selected={mode} onSelect={onModeChange} />
+
+      <div className="flex flex-col gap-1">
+        <label className="flex items-center gap-2.5 cursor-pointer select-none">
+          <button
+            type="button"
+            role="switch"
+            aria-checked={includeRefinements}
+            onClick={() => onIncludeRefinementsChange(!includeRefinements)}
+            className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors cursor-pointer ${
+              includeRefinements ? "bg-amber-500" : "bg-zinc-700"
+            }`}
+          >
+            <span
+              className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-transform ${
+                includeRefinements ? "translate-x-[18px]" : "translate-x-[3px]"
+              }`}
+            />
+          </button>
+          <span className="text-sm text-zinc-400">Include refinements</span>
+        </label>
+        <p className="text-xs text-zinc-600 pl-[46px]">
+          Considers 2–3 potential creative adjustments for each initial prompt generated and makes a prompt for each variation. Costs roughly 2x more to do.
+        </p>
+      </div>
 
       <div className="flex flex-col gap-2">
         <label htmlFor="prompt" className="text-sm font-medium text-zinc-400">
@@ -142,10 +170,10 @@ export default function PromptInput({
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            Generating...
+            Generating directions...
           </span>
         ) : (
-          "Generate JSON Prompt"
+          "Generate Directions"
         )}
       </button>
     </div>

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { ASPECT_RATIOS, RESOLUTIONS, PRESETS, ConvertRequest } from "@/lib/schema";
+import { ASPECT_RATIOS, RESOLUTIONS, DIRECTION_MODES, DirectionMode, GenerateRequest } from "@/lib/schema";
 import { buildSystemPrompt } from "@/lib/system-prompt";
 
 const anthropic = new Anthropic();
 
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json()) as ConvertRequest;
+    const body = (await request.json()) as GenerateRequest;
 
     if (!body.prompt || body.prompt.trim().length === 0) {
       return NextResponse.json(
@@ -36,17 +36,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (
-      body.preset &&
-      !PRESETS.includes(body.preset as (typeof PRESETS)[number])
-    ) {
+    const validModes = Object.keys(DIRECTION_MODES) as DirectionMode[];
+    if (body.mode && !validModes.includes(body.mode)) {
       return NextResponse.json(
-        { error: `Invalid preset. Must be one of: ${PRESETS.join(", ")}` },
+        { error: `Invalid mode. Must be one of: ${validModes.join(", ")}` },
         { status: 400 }
       );
     }
 
-    const systemPrompt = buildSystemPrompt(body.preset);
+    const mode: DirectionMode = body.mode ?? "balanced";
+    const modeConfig = DIRECTION_MODES[mode];
+    const includeRefinements = body.includeRefinements ?? false;
+    const systemPrompt = buildSystemPrompt(mode, includeRefinements);
 
     let userMessage = body.prompt.trim();
     if (body.aspectRatio) {
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
       max_tokens: 16000,
       thinking: {
         type: "enabled",
-        budget_tokens: 3000,
+        budget_tokens: 10000,
       },
       system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
@@ -107,12 +108,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate response structure — min directions based on mode total
+    const minDirections = Math.max(modeConfig.total - 2, 1);
+    if (!jsonResponse.directions || !Array.isArray(jsonResponse.directions) || jsonResponse.directions.length < minDirections) {
+      console.error(`Invalid response structure: expected at least ${minDirections} directions for mode "${mode}", got ${jsonResponse.directions?.length ?? 0}.`, jsonResponse);
+      return NextResponse.json(
+        { error: "Model returned an incomplete response. Please try again." },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(jsonResponse);
   } catch (error) {
 
     console.error("API error:", error);
     return NextResponse.json(
-      { error: "Failed to generate prompt. Please try again." },
+      { error: "Failed to generate directions. Please try again." },
       { status: 500 }
     );
   }

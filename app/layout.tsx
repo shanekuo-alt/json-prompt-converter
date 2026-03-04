@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JSON Prompt Converter | Ad101",
-  description: "Convert plain English descriptions into structured JSON prompts for Google Imagen.",
+  title: "Creative Direction Generator | Ad101",
+  description: "Generate 10 divergent creative directions for Google Imagen (Nano Banana 2) from plain English.",
 };
 
 export default function RootLayout({
