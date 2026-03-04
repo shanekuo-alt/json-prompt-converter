@@ -63,16 +63,12 @@ export type Resolution = (typeof RESOLUTIONS)[number];
 export const PRESETS = ["Ad Creative", "Social Post", "Client Deliverable"] as const;
 export type Preset = (typeof PRESETS)[number];
 
-export const THINKING_LEVELS = ["Minimal", "Low", "Medium", "High", "Dynamic"] as const;
-export type ThinkingLevel = (typeof THINKING_LEVELS)[number];
-
 export interface ConvertRequest {
   prompt: string;
   preset?: Preset;
   aspectRatio?: AspectRatio;
   resolution?: Resolution;
   purpose?: string;
-  thinkingLevel?: ThinkingLevel;
   text?: {
     content: string;
     font_style?: string;

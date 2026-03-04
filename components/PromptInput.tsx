@@ -1,6 +1,6 @@
 "use client";
 
-import { ASPECT_RATIOS, RESOLUTIONS, THINKING_LEVELS, AspectRatio, Resolution, Preset, ThinkingLevel } from "@/lib/schema";
+import { ASPECT_RATIOS, RESOLUTIONS, AspectRatio, Resolution, Preset } from "@/lib/schema";
 import PresetSelector from "./PresetSelector";
 
 interface PromptInputProps {
@@ -14,8 +14,6 @@ interface PromptInputProps {
   onResolutionChange: (res: Resolution) => void;
   purpose: string;
   onPurposeChange: (value: string) => void;
-  thinkingLevel: ThinkingLevel;
-  onThinkingLevelChange: (level: ThinkingLevel) => void;
   textContent: string;
   onTextContentChange: (value: string) => void;
   onSubmit: () => void;
@@ -33,8 +31,6 @@ export default function PromptInput({
   onResolutionChange,
   purpose,
   onPurposeChange,
-  thinkingLevel,
-  onThinkingLevelChange,
   textContent,
   onTextContentChange,
   onSubmit,
@@ -132,25 +128,6 @@ export default function PromptInput({
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-zinc-400">Thinking</label>
-          <div className="flex gap-1.5">
-            {THINKING_LEVELS.map((level) => (
-              <button
-                key={level}
-                type="button"
-                onClick={() => onThinkingLevelChange(level)}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium transition-all cursor-pointer ${
-                  thinkingLevel === level
-                    ? "bg-zinc-600 text-zinc-100"
-                    : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-300"
-                }`}
-              >
-                {level}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       <button

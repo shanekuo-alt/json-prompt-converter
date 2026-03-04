@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { ASPECT_RATIOS, RESOLUTIONS, PRESETS, THINKING_LEVELS, ConvertRequest } from "@/lib/schema";
+import { ASPECT_RATIOS, RESOLUTIONS, PRESETS, ConvertRequest } from "@/lib/schema";
 import { buildSystemPrompt } from "@/lib/system-prompt";
 
 const anthropic = new Anthropic();
@@ -46,16 +46,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (
-      body.thinkingLevel &&
-      !THINKING_LEVELS.includes(body.thinkingLevel as (typeof THINKING_LEVELS)[number])
-    ) {
-      return NextResponse.json(
-        { error: `Invalid thinking level. Must be one of: ${THINKING_LEVELS.join(", ")}` },
-        { status: 400 }
-      );
-    }
-
     const systemPrompt = buildSystemPrompt(body.preset);
 
     let userMessage = body.prompt.trim();
@@ -77,7 +67,11 @@ export async function POST(request: NextRequest) {
 
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 2048,
+      max_tokens: 16000,
+      thinking: {
+        type: "enabled",
+        budget_tokens: 10000,
+      },
       system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
     });

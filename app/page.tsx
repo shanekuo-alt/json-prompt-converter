@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { JsonPrompt, AspectRatio, Resolution, Preset, ThinkingLevel } from "@/lib/schema";
+import { JsonPrompt, AspectRatio, Resolution, Preset } from "@/lib/schema";
 import PromptInput from "@/components/PromptInput";
 import JsonOutput from "@/components/JsonOutput";
 
@@ -11,7 +11,6 @@ export default function Home() {
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
   const [resolution, setResolution] = useState<Resolution>("2K");
   const [purpose, setPurpose] = useState("");
-  const [thinkingLevel, setThinkingLevel] = useState<ThinkingLevel>("Dynamic");
   const [textContent, setTextContent] = useState("");
   const [result, setResult] = useState<JsonPrompt | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +33,6 @@ export default function Home() {
           aspectRatio,
           resolution,
           purpose: purpose.trim() || undefined,
-          thinkingLevel,
           text: textContent.trim() ? { content: textContent.trim() } : undefined,
         }),
       });
@@ -85,8 +83,6 @@ export default function Home() {
             onResolutionChange={setResolution}
             purpose={purpose}
             onPurposeChange={setPurpose}
-            thinkingLevel={thinkingLevel}
-            onThinkingLevelChange={setThinkingLevel}
             textContent={textContent}
             onTextContentChange={setTextContent}
             onSubmit={handleSubmit}
