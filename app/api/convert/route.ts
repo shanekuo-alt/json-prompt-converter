@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       max_tokens: 16000,
       thinking: {
         type: "enabled",
-        budget_tokens: 5000,
+        budget_tokens: 3000,
       },
       system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
