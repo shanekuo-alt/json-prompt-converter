@@ -1,5 +1,12 @@
 import { DIRECTION_MODES, DirectionMode } from "./schema";
 
+const IMPERFECTION_LIBRARY = `At least one direction must break NB2's polished default using a specific photographic imperfection technique. Choose from this library or generate an equally specific technique that fits the subject:
+- Compositional: Dutch angle, off-center subject with extreme negative space, tight crop cutting into subject, foreground obstruction (shooting through/past objects)
+- Film/analog: raw film grain (Tri-X 400, HP5), halation or light leak bleed, cross-processed color shift, expired film warm cast, Polaroid soft border
+- Camera behavior: intentional motion blur, shallow focus on unexpected element, lens flare from direct light source, long exposure light trails
+- Texture: risograph dot pattern, wet plate collodion aesthetic, newspaper halftone grain
+Never use vague quality words like 'raw,' 'imperfect,' or 'unpolished' alone — always pair with a concrete photographic technique.`;
+
 function buildDiversityRules(mode: DirectionMode): string {
   const config = DIRECTION_MODES[mode];
   const parts: string[] = [];
@@ -19,7 +26,7 @@ With ${config.standard} directions to fill, exhaust every plausible creative axi
   } else if (config.otb > 0 && config.standard === 0 && config.wildCard === 0) {
     parts.push(`Generate exactly ${config.total} directions, all with category "outside-the-box".
 
-**Outside the Box (${config.otb} directions):** Subvert the obvious interpretation in ${config.otb} genuinely different ways. Challenge the framing entirely — art installations, deconstructed still life, unexpected cultural contexts, surreal juxtapositions, genre mashups. Each direction should make the user say "I never would have thought of that." With ${config.otb} slots, push into wildly different conceptual territories — no two should share the same subversion strategy. At least one direction must break NB2's polished default — include directives like 'raw film grain,' 'intentional motion blur,' 'unprocessed editorial look,' 'imperfect framing,' or 'analog texture.'`);
+**Outside the Box (${config.otb} directions):** Subvert the obvious interpretation in ${config.otb} genuinely different ways. Challenge the framing entirely — art installations, deconstructed still life, unexpected cultural contexts, surreal juxtapositions, genre mashups. Each direction should make the user say "I never would have thought of that." With ${config.otb} slots, push into wildly different conceptual territories — no two should share the same subversion strategy. ${IMPERFECTION_LIBRARY}`);
   } else if (config.wildCard > 0 && config.standard === 0 && config.otb === 0) {
     parts.push(`Generate exactly ${config.total} directions, all with category "wild-card".
 
@@ -41,7 +48,7 @@ With ${config.standard} directions to fill, exhaust every plausible creative axi
 
     if (config.otb > 0) {
       totalParts.push(`${config.otb} with category "outside-the-box"`);
-      parts.push(`\n**Outside the Box (${config.otb} direction${config.otb > 1 ? "s" : ""}):** Subvert the obvious interpretation. ${config.otb > 1 ? `Challenge the framing in ${config.otb} genuinely different ways — art installations, deconstructed still life, unexpected cultural contexts, surreal juxtapositions.` : "One bold reframing the user wouldn't have thought of."} These should make the user say "I never would have thought of that." At least one direction must break NB2's polished default — include directives like 'raw film grain,' 'intentional motion blur,' 'unprocessed editorial look,' 'imperfect framing,' or 'analog texture.'`);
+      parts.push(`\n**Outside the Box (${config.otb} direction${config.otb > 1 ? "s" : ""}):** Subvert the obvious interpretation. ${config.otb > 1 ? `Challenge the framing in ${config.otb} genuinely different ways — art installations, deconstructed still life, unexpected cultural contexts, surreal juxtapositions.` : "One bold reframing the user wouldn't have thought of."} These should make the user say "I never would have thought of that." ${IMPERFECTION_LIBRARY}`);
     }
 
     if (config.wildCard > 0) {
